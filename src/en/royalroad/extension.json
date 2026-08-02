@@ -1,1 +1,7 @@
-
+{
+  "name": "RoyalRoad",
+  "lang": "en",
+  "baseUrl": "https://www.royalroad.com",
+  "id": "2999288334321271808",
+  "nsfw": 0
+}
