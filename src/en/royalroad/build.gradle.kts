@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.library")
+    id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
@@ -8,11 +8,9 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        applicationId = "eu.kanade.tachiyomi.extension.en.royalroad"
         minSdk = 21
         targetSdk = 34
-        // Bump versionCode/versionName together whenever RoyalRoad.kt
-        // changes - the index generator reads these back out of the
-        // built APK's manifest for index.min.json.
         versionCode = 1
         versionName = "1.0.0"
     }
@@ -23,6 +21,12 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+        }
     }
 }
 
