@@ -1,1 +1,62 @@
+name: Build extensions
 
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Debug builds are auto-signed with the Android debug key, so no
+      # signing secrets are needed to get something installable. Switch
+      # to assembleRelease + your own signing config once this is working
+      # end-to-end and you want a "real" release.
+      - name: Build all extension APKs
+        run: gradle assembleDebug --stacktrace
+
+      - name: Generate repo index
+        run: python3 scripts/generate_index.py
+
+      - name: Publish to repo branch
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Build an orphan "repo" branch from scratch each run, containing
+          # only dist/ (the apks + index.json + index.min.json). This is
+          # the branch you point Dantotsu at:
+          #   https://raw.githubusercontent.com/<you>/<repo>/repo/index.min.json
+          rm -rf /tmp/repo-branch
+          mkdir -p /tmp/repo-branch
+          cp -r dist/* /tmp/repo-branch/
+
+          cd /tmp/repo-branch
+          git init -q
+          git checkout -q -b repo
+          git add .
+          git commit -q -m "Update repo index ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push -q -f origin repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
