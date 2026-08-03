@@ -16,6 +16,10 @@ dependencyResolutionManagement {
     }
 }
 
+// Local compile-time-only stub of the tachiyomi extension interfaces -
+// see extensions-lib-stub/build.gradle.kts for why this exists.
+include(":extensions-lib-stub")
+
 // Auto-discovers every source module: any directory two levels under
 // src/ (src/<lang>/<name>/) that contains its own build.gradle.kts gets
 // registered as a Gradle module automatically. Adding a new source is
