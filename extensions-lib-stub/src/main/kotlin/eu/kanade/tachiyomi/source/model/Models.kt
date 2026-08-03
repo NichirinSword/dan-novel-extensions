@@ -70,7 +70,7 @@ abstract class Filter<T>(val name: String, var state: T) {
     open class Text(name: String) : Filter<String>(name, "")
     open class CheckBox(name: String, state: Boolean = false) : Filter<Boolean>(name, state)
     open class Select<V>(name: String, val values: Array<V>, state: Int = 0) : Filter<Int>(name, state)
-    open class Group<V>(name: String, val state: List<V>) : Filter<List<V>>(name, state)
+    open class Group<V>(name: String, initialState: List<V>) : Filter<List<V>>(name, initialState)
 }
 
 open class FilterList(list: List<Filter<*>> = emptyList()) : ArrayList<Filter<*>>(list)
