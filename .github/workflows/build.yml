@@ -45,8 +45,8 @@ jobs:
       - name: Publish to repo branch
         run: |
           set -e
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           # Build an orphan "repo" branch from scratch each run, containing
           # only dist/ (the apks + index.json + index.min.json). This is
