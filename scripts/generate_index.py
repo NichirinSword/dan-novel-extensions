@@ -1,28 +1,7 @@
 #!/usr/bin/env python3
 """
 Scans src/<lang>/<name>/ for extension.json + a built debug APK, copies
-the APKs into dist/, and writes dist/index.json + dist/index.min.json
-in the schema Dantotsu/Mihon-style readers expect:
-
-[
-  {
-    "name": "RoyalRoad",
-    "pkg": "eu.kanade.tachiyomi.extension.en.royalroad",
-    "apk": "eu.kanade.tachiyomi.extension.en.royalroad.apk",
-    "lang": "en",
-    "code": 1,
-    "version": "1.0.0",
-    "nsfw": 0,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {"name": "RoyalRoad", "lang": "en", "id": "...", "baseUrl": "..."}
-    ]
-  }
-]
-
-Run from the repo root, after `gradle assembleDebug`:
-    python3 scripts/generate_index.py
+the APKs into dist/apk/, and writes dist/index.json + dist/index.min.json.
 """
 import json
 import os
@@ -36,7 +15,7 @@ SRC = ROOT / "src"
 DIST = ROOT / "dist"
 
 
-def find_apk(module_dir: Path) -> Path | None:
+def find_apk(module_dir: Path):
     apk_dir = module_dir / "build" / "outputs" / "apk" / "debug"
     if not apk_dir.exists():
         return None
@@ -44,7 +23,7 @@ def find_apk(module_dir: Path) -> Path | None:
     return apks[0] if apks else None
 
 
-def read_build_gradle_versions(module_dir: Path) -> tuple[int, str]:
+def read_build_gradle_versions(module_dir: Path):
     text = (module_dir / "build.gradle.kts").read_text()
     code_match = re.search(r"versionCode\s*=\s*(\d+)", text)
     name_match = re.search(r'versionName\s*=\s*"([^"]+)"', text)
@@ -65,6 +44,7 @@ def main() -> int:
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir(parents=True)
+    (DIST / "apk").mkdir(parents=True)
 
     entries = []
     missing_apks = []
@@ -85,12 +65,13 @@ def main() -> int:
                 continue
 
             apk_filename = f"{pkg}.apk"
-            shutil.copy(apk_path, DIST / apk_filename)
+            shutil.copy(apk_path, DIST / "apk" / apk_filename)
+            apk_relative_path = f"apk/{apk_filename}"
 
             entries.append({
                 "name": meta["name"],
                 "pkg": pkg,
-                "apk": apk_filename,
+                "apk": apk_relative_path,
                 "lang": meta["lang"],
                 "code": code,
                 "version": version,
@@ -110,7 +91,7 @@ def main() -> int:
 
     print(f"Wrote {len(entries)} extension(s) to dist/index.min.json")
     for m in missing_apks:
-        print(f"WARNING: no built APK found for {m} (did gradle assembleDebug run for it?)", file=sys.stderr)
+        print(f"WARNING: no built APK found for {m}", file=sys.stderr)
 
     return 1 if missing_apks and not entries else 0
 
