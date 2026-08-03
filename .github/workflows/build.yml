@@ -26,6 +26,11 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          # Pinned to a version compatible with Android Gradle Plugin 8.5.2.
+          # Without this, the action grabs the newest Gradle release, which
+          # can be too new for the AGP version and break the build.
+          gradle-version: "8.7"
 
       # Debug builds are auto-signed with the Android debug key, so no
       # signing secrets are needed to get something installable. Switch
