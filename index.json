@@ -1,0 +1,21 @@
+[
+  {
+    "name": "RoyalRoad",
+    "pkg": "eu.kanade.tachiyomi.extension.en.royalroad",
+    "apk": "apk/eu.kanade.tachiyomi.extension.en.royalroad.apk",
+    "lang": "en",
+    "code": 1,
+    "version": "1.0.0",
+    "nsfw": 0,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "RoyalRoad",
+        "lang": "en",
+        "id": "2999288334321271808",
+        "baseUrl": "https://www.royalroad.com"
+      }
+    ]
+  }
+]
